@@ -7,17 +7,12 @@ import java.util.*;
 @Repository
 public class OrderRepository {
 
-    private Map<String,Order> orderMaps;//all orders
-    private Map<String,DeliveryPartner> partnerMap;//all delivery partners
-    private Map<String,String> orderDeliveryPartnerMap;//orders assigned to delivery partners
-    private Map<String, List<String>> partnerAllOrdersMap;//orders handled by a delivery partner
+    private Map<String,Order> orderMaps=new HashMap<>();;//all orders
+    private Map<String,DeliveryPartner>  partnerMap=new HashMap<>();;//all delivery partners
+    private Map<String,String>  orderDeliveryPartnerMap=new HashMap<>();;//orders assigned to delivery partners
+    private Map<String, List<String>> partnerAllOrdersMap=new HashMap<>();;//orders handled by a delivery partner
 
-    public OrderRepository() {
-        orderMaps=new HashMap<>();
-        partnerMap=new HashMap<>();
-        orderDeliveryPartnerMap=new HashMap<>();
-        partnerAllOrdersMap=new HashMap<>();
-    }
+
 
     public boolean addOrder(Order order) {
         if(orderMaps.containsKey(order.getId()))
@@ -135,17 +130,19 @@ public class OrderRepository {
         orderMaps.remove(orderId);
     }
 
-    public String getPartnerbyOrderId(String orderId) {
+    public String getPartnerByOrderId(String orderId) {
         if(orderDeliveryPartnerMap.containsKey(orderId))
             return orderDeliveryPartnerMap.get(orderId);
         return null;
     }
 
     public void deleteOrderPartnerPairRecords(String orderId, String partnerId) {
-        orderDeliveryPartnerMap.remove(orderId);//removed from order partner pair
-        List<String> orderList=partnerAllOrdersMap.get(partnerId);
-        orderList.remove(orderId);//removed from partner's order list
-        partnerAllOrdersMap.put(partnerId,orderList);
-        getPartnerById(partnerId).get().setNumberOfOrders(orderList.size());
+        if(orderDeliveryPartnerMap.containsKey(orderId)) {
+            orderDeliveryPartnerMap.remove(orderId);//removed from order partner pair
+            List<String> orderList = partnerAllOrdersMap.get(partnerId);
+            orderList.remove(orderId);//removed from partner's order list
+            partnerAllOrdersMap.put(partnerId, orderList);
+            getPartnerById(partnerId).get().setNumberOfOrders(orderList.size());
+        }
     }
 }

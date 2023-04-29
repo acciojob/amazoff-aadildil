@@ -1,5 +1,6 @@
 package com.driver;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Optional;
 
 @Service
 public class OrderService {
+    @Autowired
     OrderRepository orderRepository;
 
     public boolean addOrders(Order order) {
@@ -76,7 +78,7 @@ public class OrderService {
     public void deleteOrderById(String orderId) {
 
         orderRepository.deleteOrderById(orderId);
-        String partnerId=orderRepository.getPartnerbyOrderId(orderId);
+        String partnerId=orderRepository.getPartnerByOrderId(orderId);
         orderRepository.deleteOrderPartnerPairRecords(orderId,partnerId);
 
     }
