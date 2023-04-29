@@ -19,49 +19,75 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("orders")
 public class OrderController {
 
+    @Autowired
+    OrderService orderService;
 
     @PostMapping("/add-order")
-    public ResponseEntity<String> addOrder(@RequestBody Order order){
+    public ResponseEntity<String> addOrder(@RequestBody Order order)throws Exception{
 
+        boolean o=orderService.addOrders(order);
+        if(!o)
+            throw new Exception("Order ID already exist");
         return new ResponseEntity<>("New order added successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/add-partner/{partnerId}")
-    public ResponseEntity<String> addPartner(@PathVariable String partnerId){
+    public ResponseEntity<String> addPartner(@PathVariable String partnerId) throws Exception{
 
+        boolean p=orderService.addPartner(partnerId);
+        if(!p)
+            throw  new Exception("Partner already exist");
         return new ResponseEntity<>("New delivery partner added successfully", HttpStatus.CREATED);
     }
 
     @PutMapping("/add-order-partner-pair")
     public ResponseEntity<String> addOrderPartnerPair(@RequestParam String orderId, @RequestParam String partnerId){
 
+        try {
+            orderService.addOrderPartnerPair(orderId,partnerId);
+            return new ResponseEntity<>("New order-partner pair added successfully", HttpStatus.CREATED);
+        }catch (Exception exception)
+        {
+            return new ResponseEntity<>("order-partner pair updation failed",HttpStatus.NOT_FOUND);
+        }
+
         //This is basically assigning that order to that partnerId
-        return new ResponseEntity<>("New order-partner pair added successfully", HttpStatus.CREATED);
+
     }
 
     @GetMapping("/get-order-by-id/{orderId}")
-    public ResponseEntity<Order> getOrderById(@PathVariable String orderId){
+    public ResponseEntity<Order> getOrderById(@PathVariable String orderId) throws Exception{
 
-        Order order= null;
+
         //order should be returned with an orderId.
+        Order order=orderService.getOrderByOrderId(orderId);
+        if(order.equals(null))
+            throw  new Exception("Order ID doesn't Exist");
 
         return new ResponseEntity<>(order, HttpStatus.CREATED);
     }
 
     @GetMapping("/get-partner-by-id/{partnerId}")
-    public ResponseEntity<DeliveryPartner> getPartnerById(@PathVariable String partnerId){
+    public ResponseEntity<DeliveryPartner> getPartnerById(@PathVariable String partnerId) throws Exception {
 
-        DeliveryPartner deliveryPartner = null;
+
 
         //deliveryPartner should contain the value given by partnerId
+        DeliveryPartner deliveryPartner=orderService.getPartnerById(partnerId);
+        if(deliveryPartner.equals(null))
+            throw new Exception("Delivery Partner Doesn't Exist");
+
 
         return new ResponseEntity<>(deliveryPartner, HttpStatus.CREATED);
     }
 
     @GetMapping("/get-order-count-by-partner-id/{partnerId}")
-    public ResponseEntity<Integer> getOrderCountByPartnerId(@PathVariable String partnerId){
+    public ResponseEntity<Integer> getOrderCountByPartnerId(@PathVariable String partnerId) throws Exception{
 
-        Integer orderCount = 0;
+        DeliveryPartner deliveryPartner=orderService.getPartnerById(partnerId);
+        if(deliveryPartner.equals(null))
+            throw new Exception("Delivery Partner Doesn't Exist");
+        Integer orderCount = orderService.getOrderCountByPartnerId(partnerId);
 
         //orderCount should denote the orders given by a partner-id
 
@@ -69,8 +95,16 @@ public class OrderController {
     }
 
     @GetMapping("/get-orders-by-partner-id/{partnerId}")
-    public ResponseEntity<List<String>> getOrdersByPartnerId(@PathVariable String partnerId){
-        List<String> orders = null;
+    public ResponseEntity<List<String>> getOrdersByPartnerId(@PathVariable String partnerId) throws Exception{
+
+
+        DeliveryPartner deliveryPartner=orderService.getPartnerById(partnerId);
+        if(deliveryPartner.equals(null))
+            throw new Exception("Delivery Partner Doesn't Exist");
+
+        List<String> orders = orderService.getOrderByPartnerId(partnerId);
+        if(orders.size()==0)
+            throw new Exception("No orders assigned to "+partnerId);
 
         //orders should contain a list of orders by PartnerId
 
@@ -78,8 +112,11 @@ public class OrderController {
     }
 
     @GetMapping("/get-all-orders")
-    public ResponseEntity<List<String>> getAllOrders(){
-        List<String> orders = null;
+    public ResponseEntity<List<String>> getAllOrders() throws Exception {
+        List<String> orders = orderService.getAllOrders();
+        if(orders.size()==0)
+            throw new Exception("No orders haa been requested");
+
 
         //Get all orders
         return new ResponseEntity<>(orders, HttpStatus.CREATED);
@@ -87,7 +124,7 @@ public class OrderController {
 
     @GetMapping("/get-count-of-unassigned-orders")
     public ResponseEntity<Integer> getCountOfUnassignedOrders(){
-        Integer countOfOrders = 0;
+        Integer countOfOrders = orderService.getCountOfUnassignedOrders();
 
         //Count of orders that have not been assigned to any DeliveryPartner
 
@@ -95,9 +132,13 @@ public class OrderController {
     }
 
     @GetMapping("/get-count-of-orders-left-after-given-time/{partnerId}")
-    public ResponseEntity<Integer> getOrdersLeftAfterGivenTimeByPartnerId(@PathVariable String time, @PathVariable String partnerId){
+    public ResponseEntity<Integer> getOrdersLeftAfterGivenTimeByPartnerId(@PathVariable String time, @PathVariable String partnerId) throws Exception {
 
-        Integer countOfOrders = 0;
+        DeliveryPartner deliveryPartner=orderService.getPartnerById(partnerId);
+        if(deliveryPartner.equals(null))
+            throw new Exception("Delivery Partner Doesn't Exist");
+
+        Integer countOfOrders = orderService.getOrdersLeftAfterGivenTimeByPartnerId(time,partnerId);
 
         //countOfOrders that are left after a particular time of a DeliveryPartner
 
@@ -105,8 +146,14 @@ public class OrderController {
     }
 
     @GetMapping("/get-last-delivery-time/{partnerId}")
-    public ResponseEntity<String> getLastDeliveryTimeByPartnerId(@PathVariable String partnerId){
-        String time = null;
+    public ResponseEntity<String> getLastDeliveryTimeByPartnerId(@PathVariable String partnerId) throws Exception {
+        DeliveryPartner deliveryPartner=orderService.getPartnerById(partnerId);
+        if(deliveryPartner.equals(null))
+            throw new Exception("Delivery Partner Doesn't Exist");
+        if(orderService.getOrderCountByPartnerId(partnerId)==0)
+            throw new Exception("No orders assigned to "+partnerId);
+
+        String time = orderService.getLastDeliveryTimeByPartnerId(partnerId);
 
         //Return the time when that partnerId will deliver his last delivery order.
 
@@ -114,18 +161,26 @@ public class OrderController {
     }
 
     @DeleteMapping("/delete-partner-by-id/{partnerId}")
-    public ResponseEntity<String> deletePartnerById(@PathVariable String partnerId){
+    public ResponseEntity<String> deletePartnerById(@PathVariable String partnerId) throws Exception {
 
+        DeliveryPartner deliveryPartner=orderService.getPartnerById(partnerId);
+        if(deliveryPartner.equals(null))
+            throw new Exception("Delivery Partner Doesn't Exist");
         //Delete the partnerId
+        orderService.deletePartnerById(partnerId);
         //And push all his assigned orders to unassigned orders.
 
         return new ResponseEntity<>(partnerId + " removed successfully", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete-order-by-id/{orderId}")
-    public ResponseEntity<String> deleteOrderById(@PathVariable String orderId){
+    public ResponseEntity<String> deleteOrderById(@PathVariable String orderId) throws Exception {
 
+        Order order=orderService.getOrderByOrderId(orderId);
+        if(order.equals(null))
+            throw  new Exception("Order ID doesn't Exist");
         //Delete an order and also
+        orderService.deleteOrderById(orderId);
         // remove it from the assigned order of that partnerId
 
         return new ResponseEntity<>(orderId + " removed successfully", HttpStatus.CREATED);
