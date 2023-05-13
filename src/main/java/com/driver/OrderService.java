@@ -13,8 +13,8 @@ import java.util.Optional;
 @Service
 public class OrderService {
 
-    @Autowired
-    OrderRepository orderRepository;
+
+    OrderRepository orderRepository=new OrderRepository();
     public void addOrder(Order order) {
         orderRepository.addOrder(order);
     }
@@ -23,9 +23,7 @@ public class OrderService {
         orderRepository.addPartner(deliveryPartner);
     }
 
-//    public ResponseEntity<String> addOrderPartnerPair(String orderId, String partnerId) {
-//
-//    }
+
 
     public ResponseEntity<Order> getOrderById(String orderId) {
         Optional<Order> order=orderRepository.getOrderById(orderId);
