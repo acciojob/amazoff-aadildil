@@ -1,6 +1,8 @@
 package com.driver;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,60 +12,51 @@ import java.util.Optional;
 
 @Service
 public class OrderService {
+
     @Autowired
     OrderRepository orderRepository;
-
-    public boolean addOrders(Order order) {
-       // log.debug("adding order");
-        return orderRepository.addOrder(order);
+    public void addOrder(Order order) {
+        orderRepository.addOrder(order);
     }
 
-    public boolean addPartner(String partnerId) {
-        DeliveryPartner deliveryPartner=new DeliveryPartner(partnerId);
-        return orderRepository.addPartner(deliveryPartner);
+    public void addPartner(DeliveryPartner deliveryPartner) {
+        orderRepository.addPartner(deliveryPartner);
     }
 
-    public boolean addOrderPartnerPair(String orderId, String partnerId) throws Exception{
+//    public ResponseEntity<String> addOrderPartnerPair(String orderId, String partnerId) {
+//
+//    }
+
+    public ResponseEntity<Order> getOrderById(String orderId) {
         Optional<Order> order=orderRepository.getOrderById(orderId);
-        Optional<DeliveryPartner> deliveryPartner=orderRepository.getPartnerById(partnerId);
-        if(order.isEmpty())
-            throw new Exception("order doesn't exist");
-        if(deliveryPartner.isEmpty())
-            throw new Exception("Delivery partner doesn't exist");
 
-       orderRepository.addOrderPartnerPair(orderId,partnerId);
+        return new ResponseEntity<>(order.get(), HttpStatus.OK);
 
-        return true;
     }
 
-    public Order getOrderByOrderId(String orderId) {
-       Optional<Order> order= orderRepository.getOrderById(orderId);
-       if(order.isEmpty())
-           return null;
-       return order.get();
+    public ResponseEntity<String> addOrderPartnerPair(String orderId, String partnerId) {
+        return orderRepository.addOrderPartnerPair(orderId,partnerId);
     }
 
     public DeliveryPartner getPartnerById(String partnerId) {
-        Optional<DeliveryPartner> deliveryPartner=orderRepository.getPartnerById(partnerId);
-        if(deliveryPartner.isEmpty())
-            return null;
-        return deliveryPartner.get();
+        return orderRepository.getPartnerById(partnerId);
     }
 
-    public Integer getOrderCountByPartnerId(String partnerId) {
-        return orderRepository.getOrderCountByPartnerId(partnerId);
+    public int getOrderCountByPartner(String partnerId) {
+        DeliveryPartner partner=orderRepository.getPartnerById(partnerId);
+        return partner.getNumberOfOrders();
     }
 
-    public List<String> getOrderByPartnerId(String partnerId) {
-        return orderRepository.getOrderByPartnerId(partnerId);
+    public List<String> getOrdersByPartnerId(String partnerId) {
+        return orderRepository.getOrdersByPartnerId(partnerId);
     }
 
     public List<String> getAllOrders() {
         return orderRepository.getAllOrders();
     }
 
-    public Integer getCountOfUnassignedOrders() {
-        return orderRepository.getCountOfUnassignedOrders();
+    public int getCountUnassignedOrders() {
+        return orderRepository.getCountUnassignedOrders();
     }
 
     public Integer getOrdersLeftAfterGivenTimeByPartnerId(String time, String partnerId) {
@@ -79,10 +72,6 @@ public class OrderService {
     }
 
     public void deleteOrderById(String orderId) {
-
         orderRepository.deleteOrderById(orderId);
-        String partnerId=orderRepository.getPartnerByOrderId(orderId);
-        orderRepository.deleteOrderPartnerPairRecords(orderId,partnerId);
-
     }
 }
