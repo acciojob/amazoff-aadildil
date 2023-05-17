@@ -88,7 +88,7 @@ public class OrderRepository {
         int numericalTime = Integer.parseInt(time.substring(0,2))*60 + Integer.parseInt(time.substring(3,5));
         int count = 0;
         for(String orderId : partnerAllOrdersMap.get(partnerId)){
-            if(orderMaps.get(orderId).getDeliveryTime()>numericalTime){
+            if(Integer.parseInt(orderMaps.get(orderId).getDeliveryTime())>numericalTime){
                 count++;
             }
         }
@@ -99,8 +99,8 @@ public class OrderRepository {
         int latestTime = 0;
         if(partnerAllOrdersMap.containsKey(partnerId)&&partnerAllOrdersMap.get(partnerId).size()>0){
             for(String currOrderId : partnerAllOrdersMap.get(partnerId)){
-                if(orderMaps.get(currOrderId).getDeliveryTime()>latestTime){
-                    latestTime = orderMaps.get(currOrderId).getDeliveryTime();
+                if(Integer.parseInt(orderMaps.get(currOrderId).getDeliveryTime())>latestTime){
+                    latestTime = Integer.parseInt(orderMaps.get(currOrderId).getDeliveryTime());
                 }
             }
         }

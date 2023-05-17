@@ -1,12 +1,18 @@
 package com.driver;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
 import java.util.Arrays;
 import java.util.List;
 
+@NoArgsConstructor
 public class Order {
 
     private String id;
-    private int deliveryTime;
+    private String deliveryTime;
 
     public Order(String id, String deliveryTime) {
 
@@ -24,18 +30,16 @@ public class Order {
         return id;
     }
 
-    public int getDeliveryTime() {return deliveryTime;}
+    public String getDeliveryTime() {return deliveryTime;}
 
-    public void setDeliveryTime(int deliveryTime) {
-        this.deliveryTime = deliveryTime;
-    }
+
     public void setDeliveryTime(String deliveryTime) {
         this.deliveryTime = convertDeliveryTime(deliveryTime);
     }
 
-    public static int convertDeliveryTime(String deliveryTime) {
+    public static String convertDeliveryTime(String deliveryTime) {
         List<String> time= Arrays.asList(deliveryTime.split(":"));
-        return Integer.parseInt(time.get(0))*60+Integer.parseInt(time.get(1));
+        return String.valueOf( Integer.parseInt(time.get(0))*60+Integer.parseInt(time.get(1)));
     }
 
     public static String convertDeliveryTime(int deliveryTime)
@@ -50,8 +54,9 @@ public class Order {
     }
     public  String convertDeliveryTime()
     {
-        String HH=String.valueOf(this.deliveryTime/60);
-        String MM=String.valueOf(this.deliveryTime%60);
+        int dTime=Integer.parseInt(this.deliveryTime);
+        String HH=String.valueOf(dTime/60);
+        String MM=String.valueOf(dTime%60);
         if(HH.length()==1)
             HH="0"+HH;
         if(MM.length()==1)

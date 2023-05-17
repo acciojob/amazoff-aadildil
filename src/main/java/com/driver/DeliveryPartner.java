@@ -1,5 +1,10 @@
 package com.driver;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
 public class DeliveryPartner {
 
     private String id;
