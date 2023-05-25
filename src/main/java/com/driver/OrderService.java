@@ -1,69 +1,70 @@
 package com.driver;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 @Service
 public class OrderService {
-    OrderRepository orderRepository=new OrderRepository();
 
+    OrderRepository orderRepository = new OrderRepository();
 
-    public void addOrder(Order order) {
-        orderRepository.addOrder(order);
+    public void addOrder(Order order){                                                                  // 1st API
+        orderRepository.addorder(order);
     }
 
-
-    public void addPartner(String partnerId) {
+    public void addPartner(String partnerId){                                                           // 2nd API
         orderRepository.addPartner(partnerId);
     }
 
-
-    public void addOrderPartnerPair(String orderId, String partnerId) {
+    public void addOrderPartnerPair(String orderId,String partnerId){                                    // 3rd API
         orderRepository.addOrderPartnerPair(orderId,partnerId);
     }
 
-    public Order getOrderById(String orderId) {
-        return orderRepository.getOrderById(orderId);
+    public Order getOrderById(String orderId){                                                          // 4th API
+        Order order = orderRepository.getOrderById(orderId);
+        return order;
     }
 
-    public DeliveryPartner getPartnerById(String partnerId) {
-        return orderRepository.getPartnerById(partnerId);
+    public DeliveryPartner getPartnerById(String partnerId){                                            // 5th API
+        DeliveryPartner deliveryPartner = orderRepository.getPartnerById(partnerId);
+        return deliveryPartner;
     }
 
-    public Integer getOrderCountByPartnerId(String partnerId) {
-        return orderRepository.getOrderCountByPartnerId(partnerId);
+    public Integer getOrderCountByPartnerId(String partnerId){                                          // 6th API
+        int orderCount = orderRepository.getOrderCountByPartnerId(partnerId);
+        return orderCount;
     }
 
-    public List<String> getOrdersByPartnerId(String partnerId) {
-        return orderRepository.getOrdersByPartnerId(partnerId);
+    public List<String> getOrdersByPartnerId(String partnerId){                                         // 7th API
+        List<String> orders = orderRepository.getOrdersByPartnerId(partnerId);
+        return orders;
     }
 
-    public List<String> getAllOrders() {
-        return orderRepository.getAllOrders();
+    public List<String> getAllOrders(){                                                                  // 8th API
+        List<String> orders = orderRepository.getAllOrders();
+        return orders;
     }
 
-    public Integer getCountOfUnassignedOrders() {
-        return orderRepository.getCountOfUnassignedOrders();
+    public Integer getCountOfUnassignedOrders(){                                                         // 9th API
+        Integer countOfOrders = orderRepository.getCountOfUnassignedOrders();
+        return countOfOrders;
     }
 
-    public Integer getOrdersLeftAfterGivenTimeByPartnerId(String time, String partnerId) {
-        return orderRepository.getOrdersLeftAfterGivenTimeByPartnerId(time,partnerId);
+    public Integer getOrdersLeftAfterGivenTimeByPartnerId(String time,String partnerId){                // 10th API
+        int countOfOrders = orderRepository.getOrdersLeftAfterGivenTimeByPartnerId(time,partnerId);
+        return countOfOrders;
     }
 
-    public String getLastDeliveryTimeByPartnerId(String partnerId) {
-        return orderRepository.getLastDeliveryTimeByPartnerId(partnerId);
+    public String getLastDeliveryTimeByPartnerId(String partnerId) {                                    // 11th API
+        String time = orderRepository.getLastDeliveryTimeByPartnerId(partnerId);
+        return time;
     }
 
-    public void deletePartnerById(String partnerId) {
+    public void deletePartnerById(String partnerId){                                                    // 12th API                                                                                  // 12th API
         orderRepository.deletePartnerById(partnerId);
     }
 
-    public void deleteOrderById(String orderId) {
+    public void deleteOrderById(String orderId){                                                        // 13th API                                                                                            // 13th API
         orderRepository.deleteOrderById(orderId);
     }
-
-
 }

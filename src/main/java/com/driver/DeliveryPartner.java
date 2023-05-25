@@ -1,7 +1,6 @@
 package com.driver;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
 
 
 public class DeliveryPartner {
@@ -12,11 +11,6 @@ public class DeliveryPartner {
     public DeliveryPartner(String id) {
         this.id = id;
         this.numberOfOrders = 0;
-    }
-
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getId() {

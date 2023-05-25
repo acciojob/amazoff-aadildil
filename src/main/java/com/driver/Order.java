@@ -1,8 +1,5 @@
 package com.driver;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
 import java.util.Arrays;
@@ -17,15 +14,13 @@ public class Order {
 
         // The deliveryTime has to converted from string to int and then stored in the attribute
         //deliveryTime  = HH*60 + MM
+        this.id = id;
 
-        this.id=id;
+        int hours = Integer.valueOf(deliveryTime.substring(0,2));
+        int minutes = Integer.valueOf(deliveryTime.substring(3));
+        int total = hours*60 + minutes;
 
-        String arr[]=deliveryTime.split(":");//12:45
-        int hr=Integer.parseInt(arr[0]);
-        int min=Integer.parseInt(arr[1]);
-
-        this.deliveryTime=(hr*60+min);
-
+        this.deliveryTime = total;
     }
 
     public String getId() {
